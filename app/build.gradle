@@ -1,0 +1,48 @@
+apply plugin: 'com.android.application'
+apply from: 'tinkerpatch.gradle'
+android {
+    compileSdkVersion 25
+    buildToolsVersion "25.0.3"
+    defaultConfig {
+        applicationId "com.tinker_master.www"
+        minSdkVersion 15
+        targetSdkVersion 25
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    //需要配置自己的签名
+    signingConfigs {
+        release {
+            try {
+                keyAlias 'kestore'//一个Keystory别名,我这个别名少了个y
+                keyPassword 'tinker'//keystory别名的密码
+                storeFile file('keystore.jks')//签名文件,放在app目录下,和build.gradle同级
+                storePassword 'tinker'//keystory密码
+            }
+            catch (ex) {
+                //throw new Exception("You should define KEYSTORE_PASSWORD and KEY_PASSWORD in gradle.properties")
+            }
+        }
+    }
+    buildTypes {
+        release {
+            signingConfig signingConfigs.release
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+    dependencies {
+        compile fileTree(dir: 'libs', include: ['*.jar'])
+        androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+            exclude group: 'com.android.support', module: 'support-annotations'
+        })
+        compile 'com.android.support:appcompat-v7:25.3.1'
+        compile 'com.android.support:design:25.3.1'
+        testCompile 'junit:junit:4.12'
+
+        //tinker的核心库
+        compile("com.tinkerpatch.sdk:tinkerpatch-android-sdk:1.1.4")
+        // 若使用annotation需要单独引用,对于tinker的其他库都无需再引用
+        provided("com.tencent.tinker:tinker-android-anno:1.7.7")
+    }
